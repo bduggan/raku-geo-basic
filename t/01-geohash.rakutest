@@ -1,0 +1,20 @@
+#!raku
+
+use Geo::Utils;
+use Test;
+
+for 51.433718,   -0.214126,  2, 'gc', 						   "Ireland, most of England and Wales, small part of Scotland",
+    51.433718,   -0.214126,  9, 'gcpue5hp4',         "the umpire's chair on Center Court at Wimbledon",
+    51.433718,   -0.214126, 17, 'gcpue5hp4ebnf8unc', "likely an individual molecule of the chair",
+    57.649110,   10.407440, 11, 'u4pruydqqvj',       "Wikipedia test value - Råbjerg Mile in Denmark",
+    59.358639,   24.744778,  7, 'ud99ejf',    			 "Lake Raku in Estonia",
+    29.2021188, 81.5324561,  7, 'tv1ypk4',     			 "Village Raku in Nepal"
+  -> $lat, $long, $precision, $hash, $desc {
+     my $enc = geohash-encode $lat, $long, $precision;
+     is $enc, $hash, "encoded $desc to $hash"; 
+     my $dec = geohash-decode($enc);
+     my $lat-accuracy = (abs($dec[0][0]-$dec[0][1])/2);
+     ok $lat - $lat-accuracy <= ($dec[0].sum / 2) <= $lat + $lat-accuracy, "lat is within $lat-accuracy of $lat";
+     my $long-accuracy = (abs($dec[1][0]-$dec[1][1])/2);
+     ok $long - $long-accuracy <= ($dec[1].sum / 2) <= $long + $long-accuracy, "long is within $long-accuracy of $long";
+}
