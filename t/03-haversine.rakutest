@@ -1,0 +1,18 @@
+#!raku
+
+use Geo::Basic;
+use Test;
+
+is haversine-km(:lat1<0>, :lon1<0>, :lat2<0>, :lon2<0>), 0, 'same point in km';
+is haversine-miles(:lat1<0>, :lon1<0>, :lat2<0>, :lon2<0>), 0, 'same point in miles';
+is haversine-km(:lat1<0>, :lon1<0>, :lat2<0>, :lon2<90>).Int, 10007, '90 degrees in km';
+is haversine-miles(:lat1<0>, :lon1<0>, :lat2<0>, :lon2<90>).Int, 6218, '90 degrees in miles';
+
+my ($lat1,$lon1) = 39.9527237, -75.1635262;
+my ($lat2,$lon2) = 37.7792588, -122.4193286;
+
+is haversine-miles(:$lat1, :$lon1, :$lat2, :$lon2).Int, 2516, 'miles from phl to sf is ok';
+is haversine-km(:$lat1, :$lon1, :$lat2, :$lon2).Int, 4050, 'km from phl to sf is ok';
+
+done-testing;
+

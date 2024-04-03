@@ -2,6 +2,6 @@ use Test;
 
 plan 1;
 
-use-ok 'Geo::Utils';
+use-ok 'Geo::Basic';
 
 

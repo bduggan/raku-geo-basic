@@ -1,11 +1,11 @@
 #!raku
 
-use Geo::Utils;
+use Geo::Basic;
 use Test;
 
 plan 1;
 
-is geohash-neighbors("tuvz4p0f7"),
- <tuvz4p0f4 tuvz4p0f5 tuvz4p0fh tuvz4p0f6 tuvz4p0fk tuvz4p0fd tuvz4p0fe tuvz4p0fs>,
+is geohash-neighbors("tuvz4p0f7").sort,
+ <tuvz4p0f4 tuvz4p0f5 tuvz4p0fh tuvz4p0f6 tuvz4p0fk tuvz4p0fd tuvz4p0fe tuvz4p0fs>.sort,
  'neighbors of mt everest';
 

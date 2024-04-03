@@ -1,0 +1,21 @@
+{
+    "name" : "Geo::Basic",
+    "source-url" : "git://github.com/bduggan/raku-geo-basic.git",
+    "raku" : "6.*",
+    "build-depends" : [ ],
+    "provides" : {
+        "Geo::Basic" : "lib/Geo/Basic.rakumod"
+    },
+    "tags" : [
+            "geo"
+        ],
+    "depends" : [
+    ],
+    "description" : "Basic routines for geospatial calculations",
+    "test-depends" : [ ],
+    "version" : "0.0.1",
+    "license" : "Artistic-1.0-Perl",
+    "authors" : [
+        "Brian Duggan"
+    ]
+}
