@@ -40,6 +40,8 @@ The following functions are provided:
     * `geohash-encode` -- encode a latitude and longitude into a geohash
     * `geohash-decode` -- decode a geohash into a latitude and longitude
     * `geohash-neighbors` -- find the neighbors of a geohash
+    * `quadkey-encode` -- convert a latitude and longitude to a quadkey
+    * `quadkey-decode` -- convert a quadkey to lat/lon bounds
     * `haversine-km` -- calculate the distance between two points on the earth in kilometers
     * `haversine-miles` -- calculate the distance between two points on the earth in miles
 
