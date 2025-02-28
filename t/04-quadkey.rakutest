@@ -1,0 +1,18 @@
+#!raku
+
+use Geo::Basic;
+use Test;
+
+my $b = quadkey-decode('032001022');
+
+is-approx $b<lat-max>,  39.368279, 'lat-max';
+is-approx $b<lat-min>,  38.822590, 'lat-min';
+is-approx $b<lon-max>, -83.671875, 'lon-max';
+is-approx $b<lon-min>, -84.375000, 'lon-min';
+
+is quadkey-encode(lat => 39.368279, lon => -83.671875, zoom => 8), '03200102', 'latlon-to-quadkey';
+
+done-testing;
+
+
+

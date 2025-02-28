@@ -27,6 +27,9 @@ my $distance-km = haversine-km :lat1(51.435), :lon1(-0.215), :lat2(51.435), :lon
 my $distance-mi = haversine-miles :lat1(51.435), :lon1(-0.215), :lat2(51.435), :lon2(-0.214);
 # 0.04307292175092216
 
+my $quadkey = latlon-to-quadkey 51.435, -0.215, 8;
+my $bounds = quadkey-bounds $quadkey;
+
 =end code
 
 =head1 DESCRIPTION
@@ -124,6 +127,69 @@ sub haversine-km(  Real :$lat1, Real :$lon1, Real :$lat2, Real :$lon2 ) is expor
   my $a = sin($dlat/2) ** 2 + cos(radians($lat1)) * cos(radians($lat2)) * sin($dlon/2) ** 2;
   my $c = 2 * atan2(sqrt($a), sqrt(1-$a));
   $r * $c;
+}
+
+#| Convert a quadkey to lat/lon bounds
+sub quadkey-decode(Str $quadkey) is export {
+    my $zoom = $quadkey.chars;
+    my ($x, $y) = (0, 0);
+    
+    # Convert quadkey to tile coordinates
+    for $quadkey.comb -> $digit {
+        $x *= 2;
+        $y *= 2;
+        given $digit {
+            when '0' { } # NW - no adjustment needed
+            when '1' { $x += 1; }  # NE
+            when '2' { $y += 1; }  # SW
+            when '3' { $x += 1; $y += 1; }  # SE
+        }
+    }
+    
+    # Convert tile coordinates to lat/lon bounds
+    my $n = 2 ** $zoom;
+    my $lon-min = $x * 360 / $n - 180;
+    my $lon-max = ($x + 1) * 360 / $n - 180;
+    
+    # Use inverse Mercator projection for latitude
+    my $lat-max = (180 / pi) * atan(sinh(pi * (1 - 2 * $y / $n)));
+    my $lat-min = (180 / pi) * atan(sinh(pi * (1 - 2 * ($y + 1) / $n)));
+    
+    return %( :$lat-min, :$lat-max, :$lon-min, :$lon-max )
+}
+
+#| Convert lat/lon to quadkey
+sub quadkey-encode(Numeric :$lat, Numeric :$lon, Int :$zoom) is export {
+    # Convert lat/lon to tile coordinates
+    my $lat-rad = $lat * pi / 180;
+    my $n = 2 ** $zoom;
+    
+    # Calculate tile coordinates
+    my $x = (($lon + 180) / 360) * $n;
+    my $y = (1 - log(tan($lat-rad / 2 + pi / 4)) / pi) / 2 * $n;
+    
+    # Get integer tile coordinates
+    my $tile-x = $x.floor;
+    my $tile-y = $y.floor;
+    
+    # Ensure coordinates are within valid range
+    $tile-x = (0 max $tile-x) min ($n - 1);
+    $tile-y = (0 max $tile-y) min ($n - 1);
+    
+    # Convert to quadkey
+    my $quadkey = '';
+    for ^$zoom -> $i {
+        # Calculate bits from most significant to least significant
+        my $shift = $zoom - $i - 1;
+        my $x-bit = ($tile-x +> $shift) +& 1;
+        my $y-bit = ($tile-y +> $shift) +& 1;
+        
+        # Combine bits in proper order: y-bit determines 0/2, x-bit determines 0/1
+        my $digit = ($y-bit +< 1) +| $x-bit;
+        $quadkey ~= $digit;
+    }
+    
+    return $quadkey;
 }
 
 =begin pod
