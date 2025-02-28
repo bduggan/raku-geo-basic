@@ -1,3 +1,6 @@
+[![Actions Status](https://github.com/bduggan/raku-geo-basic/actions/workflows/linux.yml/badge.svg)](https://github.com/bduggan/raku-geo-basic/actions/workflows/linux.yml)
+[![Actions Status](https://github.com/bduggan/raku-geo-basic/actions/workflows/macos.yml/badge.svg)](https://github.com/bduggan/raku-geo-basic/actions/workflows/macos.yml)
+
 NAME
 ====
 
@@ -22,6 +25,9 @@ SYNOPSIS
 
     my $distance-mi = haversine-miles :lat1(51.435), :lon1(-0.215), :lat2(51.435), :lon2(-0.214);
     # 0.04307292175092216
+
+    my $quadkey = latlon-to-quadkey 51.435, -0.215, 8;
+    my $bounds = quadkey-bounds $quadkey;
 
 DESCRIPTION
 ===========
@@ -104,6 +110,28 @@ sub haversine-km(
 ```
 
 Calculate the great circle distance in kilometers using the havarsine formula
+
+### sub quadkey-decode
+
+```raku
+sub quadkey-decode(
+    Str $quadkey
+) returns Mu
+```
+
+Convert a quadkey to lat/lon bounds
+
+### sub quadkey-encode
+
+```raku
+sub quadkey-encode(
+    Numeric :$lat,
+    Numeric :$lon,
+    Int :$zoom
+) returns Mu
+```
+
+Convert lat/lon to quadkey
 
 AUTHOR
 ======
