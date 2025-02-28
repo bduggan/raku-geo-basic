@@ -13,7 +13,7 @@
     ],
     "description" : "Basic routines for geospatial calculations",
     "test-depends" : [ ],
-    "version" : "0.0.1",
+    "version" : "0.0.2",
     "license" : "Artistic-1.0-Perl",
     "authors" : [
         "Brian Duggan"
