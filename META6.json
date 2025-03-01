@@ -17,5 +17,6 @@
     "license" : "Artistic-1.0-Perl",
     "authors" : [
         "Brian Duggan"
-    ]
+    ],
+    "auth" : "zef:bduggan"
 }
