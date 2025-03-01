@@ -1,5 +1,7 @@
 0.0.3 2025-03-01
-      Fix auth in meta file
+   * CHANGES
+   * .gitignore
+   * Fix auth in meta file
 
 0.0.2 Add quadkey
 
