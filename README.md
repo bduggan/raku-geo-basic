@@ -26,8 +26,8 @@ SYNOPSIS
     my $distance-mi = haversine-miles :lat1(51.435), :lon1(-0.215), :lat2(51.435), :lon2(-0.214);
     # 0.04307292175092216
 
-    my $quadkey = latlon-to-quadkey 51.435, -0.215, 8;
-    my $bounds = quadkey-bounds $quadkey;
+    my $quadkey = quadkey-encode 51.435, -0.215, 8;
+    my $bounds = quadkey-decode $quadkey;
 
 DESCRIPTION
 ===========
