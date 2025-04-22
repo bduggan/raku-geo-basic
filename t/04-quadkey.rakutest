@@ -5,14 +5,30 @@ use Test;
 
 my $b = quadkey-decode('032001022');
 
-is-approx $b<lat-max>,  39.368279, 'lat-max';
 is-approx $b<lat-min>,  38.822590, 'lat-min';
-is-approx $b<lon-max>, -83.671875, 'lon-max';
+is-approx $b<lat-max>,  39.368279, 'lat-max';
 is-approx $b<lon-min>, -84.375000, 'lon-min';
+is-approx $b<lon-max>, -83.671875, 'lon-max';
 
-is quadkey-encode(lat => 39.368279, lon => -83.671875, zoom => 8), '03200102', 'latlon-to-quadkey';
+my $encoded = quadkey-encode(lat => 39.368279, lon => -83.671875, zoom => 8);
+is $encoded, '03200102', 'latlon-to-quadkey';
+
+my $geojson = bounds-to-geojson {
+    lat-min => 38.822590,
+    lat-max => 39.368279,
+    lon-min => -84.375000,
+    lon-max => -83.671875
+};
+
+is $geojson<type>, 'Polygon', 'geojson type';
+
+is $geojson<coordinates>, [
+    [ [ -84.375000, 38.822590 ],
+      [ -83.671875, 38.822590 ],
+      [ -83.671875, 39.368279 ],
+      [ -84.375000, 39.368279 ],
+      [ -84.375000, 38.822590 ] ]
+], 'geojson coordinates';
 
 done-testing;
-
-
 

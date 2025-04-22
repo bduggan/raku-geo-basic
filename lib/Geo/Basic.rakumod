@@ -44,6 +44,9 @@ The following functions are provided:
     * `quadkey-decode` -- convert a quadkey to lat/lon bounds
     * `haversine-km` -- calculate the distance between two points on the earth in kilometers
     * `haversine-miles` -- calculate the distance between two points on the earth in miles
+    * `bounds-to-geojson` -- convert a hash of lat/lon X min/max to a geojson polygon structure
+
+The bounds returned for geohash and quadkey decoding are hashes containing the keys lat-min, lat-max, lon-min and lon-max.
 
 =head1 FUNCTIONS
 
@@ -192,6 +195,23 @@ sub quadkey-encode(Numeric :$lat, Numeric :$lon, Int :$zoom) is export {
     }
     
     return $quadkey;
+}
+
+#| Convert a hash of lat/lon min/max to a geojson polygon
+sub bounds-to-geojson( Hash $bounds ) is export {
+    my $lat-min = $bounds<lat-min>;
+    my $lat-max = $bounds<lat-max>;
+    my $lon-min = $bounds<lon-min>;
+    my $lon-max = $bounds<lon-max>;
+    
+    return %( type => 'Polygon',
+               coordinates => [
+                   [ [ $lon-min, $lat-min ],
+                     [ $lon-max, $lat-min ],
+                     [ $lon-max, $lat-max ],
+                     [ $lon-min, $lat-max ],
+                     [ $lon-min, $lat-min ] ]
+               ] );
 }
 
 =begin pod
