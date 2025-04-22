@@ -214,7 +214,7 @@ sub bounds-to-geojson( Hash $bounds --> Hash ) is export {
                      [ $lon-max, $lat-min ],
                      [ $lon-max, $lat-max ],
                      [ $lon-min, $lat-max ],
-                     [ $lon-min, $lat-min ] ]
+                     [ $lon-min, $lat-min ] ],
                ] );
 }
 
