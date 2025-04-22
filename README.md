@@ -35,12 +35,13 @@ DESCRIPTION
 These are a few simple utilities for doing geospatial calculations. The following functions are provided:
 
     * `geohash-encode` -- encode a latitude and longitude into a geohash
-    * `geohash-decode` -- decode a geohash into lat/lon bounds
+    * `geohash-decode` -- decode a geohash into a latitude and longitude
     * `geohash-neighbors` -- find the neighbors of a geohash
     * `quadkey-encode` -- convert a latitude and longitude to a quadkey
     * `quadkey-decode` -- convert a quadkey to lat/lon bounds
     * `haversine-km` -- calculate the distance between two points on the earth in kilometers
     * `haversine-miles` -- calculate the distance between two points on the earth in miles
+    * `bounds-to-geojson` -- convert a hash of lat/lon X min/max to a geojson polygon structure
 
 The bounds returned for geohash and quadkey decoding are hashes containing the keys lat-min, lat-max, lon-min and lon-max.
 
@@ -136,6 +137,16 @@ sub quadkey-encode(
 ```
 
 Convert lat/lon to quadkey
+
+### sub bounds-to-geojson
+
+```raku
+sub bounds-to-geojson(
+    Hash $bounds
+) returns Hash
+```
+
+Convert a hash of lat/lon min/max to a geojson polygon
 
 AUTHOR
 ======

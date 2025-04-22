@@ -198,7 +198,7 @@ sub quadkey-encode(Numeric :$lat, Numeric :$lon, Int :$zoom) is export {
 }
 
 #| Convert a hash of lat/lon min/max to a geojson polygon
-sub bounds-to-geojson( Hash $bounds ) is export {
+sub bounds-to-geojson( Hash $bounds --> Hash ) is export {
     my $lat-min = $bounds<lat-min>;
     my $lat-max = $bounds<lat-max>;
     my $lon-min = $bounds<lon-min>;
