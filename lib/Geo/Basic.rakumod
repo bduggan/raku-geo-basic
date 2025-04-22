@@ -48,6 +48,8 @@ The following functions are provided:
 
 The bounds returned for geohash and quadkey decoding are hashes containing the keys lat-min, lat-max, lon-min and lon-max.
 
+The -decode functions also take a :geojson named argument which will return a geojson polygon structure instead of the hash.
+
 =head1 FUNCTIONS
 
 =end pod
@@ -76,7 +78,7 @@ sub geohash-encode ( Rat(Real) :$lat, Rat(Real) :$lon, Int :$precision = 9 ) is 
 }
 
 #| Decode a geohash into a latitude and longitude
-sub geohash-decode ( Str $geo --> Hash ) is export {
+sub geohash-decode ( Str $geo, Bool :$geojson --> Hash ) is export {
      my @range = [-90, 90], [-180, 180];
      my $which = 1;
      my %Geo32 = @Geo32.antipairs;
@@ -87,6 +89,7 @@ sub geohash-decode ( Str $geo --> Hash ) is export {
      my @res = @range >>*>> -1;
      my ($lat-min, $lat-max) = @res[0];
      my ($lon-min, $lon-max) = @res[1];
+     return bounds-to-geojson( %( :$lat-min, :$lat-max, :$lon-min, :$lon-max ) ) if $geojson;
      %( :$lat-min, :$lat-max, :$lon-min, :$lon-max );
 }
 
@@ -135,7 +138,7 @@ sub haversine-km(  Real :$lat1, Real :$lon1, Real :$lat2, Real :$lon2 ) is expor
 }
 
 #| Convert a quadkey to lat/lon bounds
-sub quadkey-decode(Str $quadkey) is export {
+sub quadkey-decode(Str $quadkey, Bool :$geojson) is export {
     my $zoom = $quadkey.chars;
     my ($x, $y) = (0, 0);
     
@@ -160,6 +163,7 @@ sub quadkey-decode(Str $quadkey) is export {
     my $lat-max = (180 / pi) * atan(sinh(pi * (1 - 2 * $y / $n)));
     my $lat-min = (180 / pi) * atan(sinh(pi * (1 - 2 * ($y + 1) / $n)));
     
+    return bounds-to-geojson( %( :$lat-min, :$lat-max, :$lon-min, :$lon-max ) ) if $geojson;
     return %( :$lat-min, :$lat-max, :$lon-min, :$lon-max )
 }
 

@@ -45,6 +45,8 @@ These are a few simple utilities for doing geospatial calculations. The followin
 
 The bounds returned for geohash and quadkey decoding are hashes containing the keys lat-min, lat-max, lon-min and lon-max.
 
+The -decode functions also take a :geojson named argument which will return a geojson polygon structure instead of the hash.
+
 FUNCTIONS
 =========
 
@@ -64,7 +66,8 @@ Encode a latitude and longitude into a geohash
 
 ```raku
 sub geohash-decode(
-    Str $geo
+    Str $geo,
+    Bool :$geojson
 ) returns Hash
 ```
 
@@ -120,7 +123,8 @@ Calculate the great circle distance in kilometers using the havarsine formula
 
 ```raku
 sub quadkey-decode(
-    Str $quadkey
+    Str $quadkey,
+    Bool :$geojson
 ) returns Mu
 ```
 

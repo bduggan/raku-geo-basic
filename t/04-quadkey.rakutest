@@ -30,5 +30,8 @@ is $geojson<coordinates>, [
       [ -84.375000, 38.822590 ] ]
 ], 'geojson coordinates';
 
+my $g = quadkey-decode('032001022', :geojson);
+ok $g<type> eq 'Polygon', 'geojson type when sending named parameter';
+
 done-testing;
 
