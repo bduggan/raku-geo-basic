@@ -212,18 +212,13 @@ sub quadkey-encode(Numeric :$lat, Numeric :$lon, Int :$zoom) is export {
 #| Convert a quadkey to slippy tile coordinates (zoom, x, y)
 sub quadkey-to-slippy(Str $quadkey --> Hash) is export {
     my $zoom = $quadkey.chars;
-    if $zoom == 1 {
-        my ($y, $x) = $quadkey.parse-base(4).fmt('%02b').comb>>.parse-base(2);
-        return %( :$zoom, :$x, :$y );
-    }
-    my ($y, $x) = ( [Z] $quadkey.parse-base(4).fmt('%0' ~ 2 * $zoom ~ 'b').comb(/../)».comb )».join».parse-base(2);
+    my ($y, $x) = $quadkey.parse-base(4).fmt("\%0{2 * $zoom}b").comb[ [0, 2 ... *], [1, 3 ... *] ]».join».parse-base(2);
     %( :$zoom, :$x, :$y );
 }
 
 #| Convert slippy tile coordinates (zoom, x, y) to a quadkey
 sub slippy-to-quadkey(Int :$zoom, Int :$x, Int :$y --> Str) is export {
-    my $fmt = '%0' ~ $zoom ~ 'b';
-    ($y.fmt($fmt).comb Z~ $x.fmt($fmt).comb)».parse-base(2).join;
+    ($y.fmt("\%0{$zoom}b").comb Z~ $x.fmt("\%0{$zoom}b").comb)».parse-base(2).join;
 }
 
 #| Convert a hash of lat/lon min/max to a geojson polygon
