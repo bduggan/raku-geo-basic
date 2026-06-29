@@ -29,6 +29,12 @@ SYNOPSIS
     my $quadkey = quadkey-encode 51.435, -0.215, 8;
     my $bounds = quadkey-decode $quadkey;
 
+    my $tile = quadkey-to-slippy '02310103';
+    # %( zoom => 8, x => 53, y => 97 )
+
+    my $qk = slippy-to-quadkey :zoom(8), :x(53), :y(97);
+    # "02310103"
+
 DESCRIPTION
 ===========
 
@@ -39,6 +45,8 @@ These are a few simple utilities for doing geospatial calculations. The followin
     * `geohash-neighbors` -- find the neighbors of a geohash
     * `quadkey-encode` -- convert a latitude and longitude to a quadkey
     * `quadkey-decode` -- convert a quadkey to lat/lon bounds
+    * `quadkey-to-slippy` -- convert a quadkey to slippy tile coordinates (zoom, x, y)
+    * `slippy-to-quadkey` -- convert slippy tile coordinates (zoom, x, y) to a quadkey
     * `haversine-km` -- calculate the distance between two points on the earth in kilometers
     * `haversine-miles` -- calculate the distance between two points on the earth in miles
     * `bounds-to-geojson` -- convert a hash of lat/lon X min/max to a geojson polygon structure
@@ -141,6 +149,28 @@ sub quadkey-encode(
 ```
 
 Convert lat/lon to quadkey
+
+### sub quadkey-to-slippy
+
+```raku
+sub quadkey-to-slippy(
+    Str $quadkey
+) returns Hash
+```
+
+Convert a quadkey to slippy tile coordinates (zoom, x, y)
+
+### sub slippy-to-quadkey
+
+```raku
+sub slippy-to-quadkey(
+    Int :$zoom,
+    Int :$x,
+    Int :$y
+) returns Str
+```
+
+Convert slippy tile coordinates (zoom, x, y) to a quadkey
 
 ### sub bounds-to-geojson
 

@@ -30,6 +30,12 @@ my $distance-mi = haversine-miles :lat1(51.435), :lon1(-0.215), :lat2(51.435), :
 my $quadkey = quadkey-encode 51.435, -0.215, 8;
 my $bounds = quadkey-decode $quadkey;
 
+my $tile = quadkey-to-slippy '02310103';
+# %( zoom => 8, x => 53, y => 97 )
+
+my $qk = slippy-to-quadkey :zoom(8), :x(53), :y(97);
+# "02310103"
+
 =end code
 
 =head1 DESCRIPTION
@@ -42,6 +48,8 @@ The following functions are provided:
     * `geohash-neighbors` -- find the neighbors of a geohash
     * `quadkey-encode` -- convert a latitude and longitude to a quadkey
     * `quadkey-decode` -- convert a quadkey to lat/lon bounds
+    * `quadkey-to-slippy` -- convert a quadkey to slippy tile coordinates (zoom, x, y)
+    * `slippy-to-quadkey` -- convert slippy tile coordinates (zoom, x, y) to a quadkey
     * `haversine-km` -- calculate the distance between two points on the earth in kilometers
     * `haversine-miles` -- calculate the distance between two points on the earth in miles
     * `bounds-to-geojson` -- convert a hash of lat/lon X min/max to a geojson polygon structure
@@ -199,6 +207,23 @@ sub quadkey-encode(Numeric :$lat, Numeric :$lon, Int :$zoom) is export {
     }
     
     return $quadkey;
+}
+
+#| Convert a quadkey to slippy tile coordinates (zoom, x, y)
+sub quadkey-to-slippy(Str $quadkey --> Hash) is export {
+    my $zoom = $quadkey.chars;
+    if $zoom == 1 {
+        my ($y, $x) = $quadkey.parse-base(4).fmt('%02b').comb>>.parse-base(2);
+        return %( :$zoom, :$x, :$y );
+    }
+    my ($y, $x) = ( [Z] $quadkey.parse-base(4).fmt('%0' ~ 2 * $zoom ~ 'b').comb(/../)».comb )».join».parse-base(2);
+    %( :$zoom, :$x, :$y );
+}
+
+#| Convert slippy tile coordinates (zoom, x, y) to a quadkey
+sub slippy-to-quadkey(Int :$zoom, Int :$x, Int :$y --> Str) is export {
+    my $fmt = '%0' ~ $zoom ~ 'b';
+    ($y.fmt($fmt).comb Z~ $x.fmt($fmt).comb)».parse-base(2).join;
 }
 
 #| Convert a hash of lat/lon min/max to a geojson polygon

@@ -33,5 +33,65 @@ is $geojson<coordinates>, [
 my $g = quadkey-decode('032001022', :geojson);
 ok $g<type> eq 'Polygon', 'geojson type when sending named parameter';
 
+my $slippy = quadkey-to-slippy('02310103');
+is $slippy<zoom>, 8,  'quadkey-to-slippy zoom';
+is $slippy<x>,    53, 'quadkey-to-slippy x';
+is $slippy<y>,    97, 'quadkey-to-slippy y';
+
+is slippy-to-quadkey(zoom => 8, x => 53, y => 97), '02310103', 'slippy-to-quadkey';
+
+# round-trip: quadkey -> slippy -> quadkey
+for <0 1 2 3 032001022 02310103 0123012301230> -> $qk {
+    my $s = quadkey-to-slippy($qk);
+    is slippy-to-quadkey(|$s), $qk, "qk round-trip $qk";
+}
+
+# zoom 1: the four root quadrants -> known (x, y)
+is quadkey-to-slippy('0'), %( zoom => 1, x => 0, y => 0 ), 'zoom 1: 0 -> NW';
+is quadkey-to-slippy('1'), %( zoom => 1, x => 1, y => 0 ), 'zoom 1: 1 -> NE';
+is quadkey-to-slippy('2'), %( zoom => 1, x => 0, y => 1 ), 'zoom 1: 2 -> SW';
+is quadkey-to-slippy('3'), %( zoom => 1, x => 1, y => 1 ), 'zoom 1: 3 -> SE';
+
+is slippy-to-quadkey(zoom => 1, x => 0, y => 0), '0', 'zoom 1: NW -> 0';
+is slippy-to-quadkey(zoom => 1, x => 1, y => 0), '1', 'zoom 1: NE -> 1';
+is slippy-to-quadkey(zoom => 1, x => 0, y => 1), '2', 'zoom 1: SW -> 2';
+is slippy-to-quadkey(zoom => 1, x => 1, y => 1), '3', 'zoom 1: SE -> 3';
+
+# all-zero / all-max corners at higher zooms
+is quadkey-to-slippy('00000'),  %( zoom => 5, x => 0,  y => 0  ),  'corner: all 0 -> (0,0)';
+is quadkey-to-slippy('33333'),  %( zoom => 5, x => 31, y => 31 ),  'corner: all 3 -> (max,max)';
+is quadkey-to-slippy('11111'),  %( zoom => 5, x => 31, y => 0  ),  'corner: all 1 -> (max,0)';
+is quadkey-to-slippy('22222'),  %( zoom => 5, x => 0,  y => 31 ),  'corner: all 2 -> (0,max)';
+
+is slippy-to-quadkey(zoom => 5, x => 0,  y => 0 ), '00000', 'encode (0,0) zoom 5';
+is slippy-to-quadkey(zoom => 5, x => 31, y => 31), '33333', 'encode (max,max) zoom 5';
+
+# slippy -> slippy round-trip from a few raw tile coordinates
+for ( (1, 0, 0), (3, 5, 2), (10, 511, 340), (16, 0, 65535) ) -> ($zoom, $x, $y) {
+    my $qk = slippy-to-quadkey(:$zoom, :$x, :$y);
+    is-deeply quadkey-to-slippy($qk), %( :$zoom, :$x, :$y ),
+        "slippy round-trip z=$zoom x=$x y=$y";
+}
+
+# quadkey-decode and quadkey-to-slippy describe the same tile
+my $qk = '032001022';
+my $b2 = quadkey-decode($qk);
+my $s2 = quadkey-to-slippy($qk);
+my $n  = 2 ** $s2<zoom>;
+is-approx $b2<lon-min>, $s2<x> * 360 / $n - 180, 'decode and to-slippy agree on lon-min';
+is-approx $b2<lon-max>, ($s2<x> + 1) * 360 / $n - 180, 'decode and to-slippy agree on lon-max';
+
+# quadkey-encode and slippy-to-quadkey agree (round-trip via lat/lon)
+my $center-qk = '03200102';
+my $cb = quadkey-decode($center-qk);
+my $cs = quadkey-to-slippy($center-qk);
+is slippy-to-quadkey(zoom => $cs<zoom>, x => $cs<x>, y => $cs<y>),
+   quadkey-encode(lat => ($cb<lat-min> + $cb<lat-max>) / 2,
+                  lon => ($cb<lon-min> + $cb<lon-max>) / 2,
+                  zoom => $cs<zoom>),
+   'slippy-to-quadkey matches quadkey-encode at tile center';
+
+dies-ok { quadkey-to-slippy('0124') }, 'invalid quadkey digit dies';
+
 done-testing;
 
